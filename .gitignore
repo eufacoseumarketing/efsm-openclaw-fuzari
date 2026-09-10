@@ -1,0 +1,14 @@
+# OpenClaw internal state (não sincronizar)
+.openclaw/
+
+# Chaves SSH e segredos (segurança!)
+.ssh/
+.secrets/
+
+# Avatares e capturas locais (não versionar)
+avatars/
+screenshot*.jpg
+
+# Backups e artefatos temporários
+backups/
+.env
