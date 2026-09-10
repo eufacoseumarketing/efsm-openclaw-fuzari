@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ============================================================
-# google-drive.sh — Wrapper Google Drive (leitura) para o Fuzari
+# google-drive.sh — Wrapper Google Drive (leitura + ESCRITA) para o Fuzari
 # Workspace: efsm-openclaw-fuzari
-# Escopo: drive.readonly (SOMENTE LEITURA)
+# Escopo: drive (completo — ler, criar, editar, excluir)
 # Usuário: interno@eufacoseu.marketing
 #
 # Uso:
@@ -10,6 +10,7 @@
 #   bash google-drive.sh list [query]     → lista arquivos (opcional: busca por nome)
 #   bash google-drive.sh get <fileId>     → metadados de um arquivo
 #   bash google-drive.sh download <fileId> <dest> → baixa um arquivo
+#   bash google-drive.sh upload <arquivo> [pastaId] → envia um arquivo
 # ============================================================
 
 set -euo pipefail
@@ -64,8 +65,43 @@ case "$CMD" in
       -H "Authorization: Bearer $TOKEN" -o "$DEST"
     echo "✅ baixado para $DEST ($(wc -c < "$DEST") bytes)"
     ;;
+  upload)
+    TOKEN=$(get_token)
+    SRC_FILE="$1"
+    FOLDER_ID="${2:-}"
+    if [ ! -f "$SRC_FILE" ]; then
+      echo "❌ Arquivo não encontrado: $SRC_FILE" >&2
+      exit 1
+    fi
+    python3 - "$SRC_FILE" "$FOLDER_ID" "$TOKEN" <<'PYEOF'
+import sys, json, urllib.request, mimetypes, os
+src, folder, token = sys.argv[1], sys.argv[2], sys.argv[3]
+name = os.path.basename(src)
+mime = mimetypes.guess_type(src)[0] or "application/octet-stream"
+boundary = "openclaw_fuzari_boundary"
+meta = {"name": name}
+if folder:
+    meta["parents"] = [folder]
+body = ("--%s\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n%s\r\n" % (boundary, json.dumps(meta)))
+body += ("--%s\r\nContent-Type: %s\r\n\r\n" % (boundary, mime))
+body = body.encode("utf-8") + open(src, "rb").read()
+body += ("\r\n--%s--\r\n" % boundary).encode("utf-8")
+req = urllib.request.Request(
+    "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+    data=body,
+    headers={"Authorization": "Bearer " + token, "Content-Type": "multipart/related; boundary=%s" % boundary},
+)
+try:
+    r = urllib.request.urlopen(req)
+    d = json.load(r)
+    print("✅ enviado: %s (id=%s)" % (d.get("name"), d.get("id")))
+except urllib.error.HTTPError as e:
+    print("❌ ERRO %s: %s" % (e.code, e.read().decode()[:300]))
+    sys.exit(1)
+PYEOF
+    ;;
   *)
-    echo "Uso: bash google-drive.sh {token|list [query]|get <id>|download <id> <dest>}" >&2
+    echo "Uso: bash google-drive.sh {token|list [query]|get <id>|download <id> <dest>|upload <arquivo> [pastaId]}" >&2
     exit 1
     ;;
 esac
