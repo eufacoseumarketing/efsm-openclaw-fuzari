@@ -12,3 +12,10 @@ screenshot*.jpg
 # Backups e artefatos temporários
 backups/
 .env
+
+# Credenciais de APIs (NUNCA versionar)
+apis/*/credentials.env
+
+# Estado interno do OpenClaw (não versionar)
+openclaw-workspace-state.json
+media/

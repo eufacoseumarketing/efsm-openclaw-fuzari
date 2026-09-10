@@ -9,4 +9,5 @@
 - Empresa: Eu Faço Seu Marketing (EFSM)
 
 ## Governança
-- **Carol é co-dona da EFSM** (mesma autoridade que o Zanatto). Discord id `1487639327918784583`.
+- **Carol Sales é co-dona da EFSM** (mesma autoridade que o Zanatto). Discord id `1487639327918784583`.
+- **Marcelo Zanatto** é dono da EFSM. Discord id `1055520662258724984`.
