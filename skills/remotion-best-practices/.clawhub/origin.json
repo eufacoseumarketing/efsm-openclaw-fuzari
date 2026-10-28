@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "registry": "https://clawhub.ai",
+  "slug": "remotion-best-practices",
+  "ownerHandle": "am-will",
+  "installedAt": 1791898251065,
+  "artifact": {
+    "kind": "archive",
+    "sha256": "1269fccc264c51a0ee58e6c2d6e0189bf517f0ef9d526a7d84d92b091aa3488c",
+    "integrity": "sha256-Emn8zCZMUaDuWObC1uAYm/UX8O+dUmp9hNkrCRqjSIw="
+  },
+  "skillFile": {
+    "path": "SKILL.md",
+    "sha256": "94c893d93051dff9b856c4ab713ddb8065cde2070b1e7b735f190db3a060ac22"
+  },
+  "fileTreeSha256": "sha256:1a7a59529801806f4d455ad401fdab40e64f649625b9a30fc2951978db32271e",
+  "installedVersion": "1.0.0"
+}
